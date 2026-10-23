@@ -10,16 +10,13 @@
              (nongnu system linux-initrd))
 
 (use-service-modules dbus linux desktop networking ssh pm cups)
-(use-package-modules glib gnome bootloaders xdisorg polkit gl package-management vulkan python-xyz)
+(use-package-modules gnome bootloaders xdisorg polkit gl package-management vulkan python-xyz)
 
 (define nvidia-transform
-(nonguix-transformation-nvidia #:driver nvda-595
-                              #:remove-nvenc-restriction? #false
-                              #:open-source-kernel-module? #false
-                              #:kernel-mode-setting? #true
-                              #:configure-xorg? #false
-                              #:dynamic-boost? #false))
-(define %Who
+  (nonguix-transformation-nvidia
+   #:driver nvda-new-feature))
+
+(define %my-os
   (operating-system
     (kernel linux)
     (firmware (list linux-firmware))
@@ -55,10 +52,10 @@
      (append
       (list
       polkit-gnome
+      mesa
       vulkan-loader
       flatpak
       ydotool
-      mesa
       nvidia-prime           
       network-manager
 	    dbus)
@@ -73,12 +70,6 @@
             (compression-algorithm 'lz4)
    	    (priority 100)))
             (service wpa-supplicant-service-type)
-	    (service tlp-service-type
-            (tlp-configuration
-            (cpu-scaling-governor-on-ac (list "performance"))
-	    (cpu-scaling-max-freq-on-ac 2800000)
-	    (cpu-scaling-max-freq-on-bat 2100000)
-            (sched-powersave-on-bat? #f)))
             (service network-manager-service-type)
             (service elogind-service-type)
 	    (udev-rules-service
@@ -100,5 +91,4 @@
             (append (list (local-file "/etc/guix/signing-key.pub"))
                     %default-authorized-guix-keys)))))))))
 
-(nvidia-transform %Who)
-
+(nvidia-transform %my-os)
