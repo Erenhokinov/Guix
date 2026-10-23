@@ -1,0 +1,1 @@
+Some guix configuration for my purposes.

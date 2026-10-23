@@ -1,66 +1,71 @@
+(add-to-load-path "/home/lix/guix/packages")
 (use-modules (gnu home)
              (gnu home services)
-             (gnu packages wm)
-             (gnu packages qt)
-             (guix gexp))
-
+             (guix gexp)
+	     (nonguix transformations)
+             (prism_pkg)
+             (gnu packages freedesktop)
+             (vesktop_pkg)
+	     (nongnu packages nvidia)
+             (guix packages)
+             (nongnu packages game-client)
+             (nonguix multiarch-container))
+(define nvidia-transform (nonguix-transformation-nvidia #:driver nvda-595))
+(define %Anyone
 (home-environment
- (packages (list hyprland qtwayland))
+(packages (list
+           (@ (gnu packages window-management) hyprland)
+           (@ (gnu packages xdisorg) hyprpaper)
+           (@ (gnu packages window-management) waybar)
+           (@ (gnu packages xdisorg) rofi)
+           (@ (gnu packages terminals) alacritty)
+	   (@ (nongnu packages nvidia) nvidia-prime)
+	   (@ (gnu packages gl) mesa-utils)
+           (@ (gnu packages web-browsers) qutebrowser)
+           (@ (gnu packages vim) neovim)
+           (@ (gnu packages version-control) git)
+           (@ (gnu packages freedesktop) xdg-utils)
+           (@ (gnu packages freedesktop) xdg-desktop-portal)
+           (@ (gnu packages freedesktop) xdg-desktop-portal-hyprland)   
+           (@ (gnu packages qt) qtwayland)
+           (@ (gnu packages polkit) polkit-gnome)
+           (@ (gnu packages xfce) thunar)
+           (@ (gnu packages linux) brightnessctl)
+           (@ (gnu packages linux) wireplumber)
+           (@ (gnu packages fonts) font-jetbrains-mono)
+           (@ (gnu packages fonts) font-nerd-symbols)
+           (@ (gnu packages xorg) xcursor-themes)
+           (@ (gnu packages telegram) telegram-desktop)
+           (@ (nongnu packages editors) vscodium)
+           (@ (nongnu packages game-client) steam)
+           prism-cracked
+           vesktop))   
 
- (services
-  (list
-   (simple-service 'qt-wayland-env
-                    home-environment-variables-service-type
-                    '(("QT_QPA_PLATFORM" . "wayland;xcb")))
+  (services
+    (list
+      (simple-service 'qt-wayland-env
+                      home-environment-variables-service-type
+                      '(("QT_QPA_PLATFORM" . "wayland;xcb")))
 
-   (simple-service 'dotfiles
-                    home-files-service-type
-                    (list
-                     (list ".config/hypr/hyprland.conf"
-                           (plain-file "hyprland.conf" "\
-env = LIBVA_DRIVER_NAME,nvidia
-env = GBM_BACKEND,nvidia-drm
-env = __GLX_VENDOR_LIBRARY_NAME,nvidia
-env = WLR_NO_HARDWARE_CURSORS,1
-env = AQ_DRM_DEVICES,/dev/dri/card0
+      (simple-service 'dotfiles
+                      home-files-service-type
+                      (list
+                        (list ".config/waybar/config.jsonc"
+                              (local-file "dotfiles/waybar/config.jsonc"))
 
-monitor=,preferred,auto,1
+                        (list ".config/waybar/style.css"
+                              (local-file "dotfiles/waybar/style.css"))
 
-exec-once = dbus-update-activation-environment --systemd --all
-exec-once = /run/current-system/profile/bin/polkit-gnome-authentication-agent-1
-exec-once = waybar
+                        (list ".config/hypr/hyprland.lua"
+                              (local-file "dotfiles/hypr/hyprland.lua"))
 
-input {
-    kb_layout = us,ru
-    kb_options = grp:alt_shift_toggle
-    follow_mouse = 1
-    force_no_accel = true
-    accel_profile = "flat"
-}
+                        (list ".config/hypr/hyprpaper.conf"
+                              (local-file "dotfiles/hypr/hyprpaper.conf"))
 
-general {
-    gaps_in = 5
-    gaps_out = 10
-    border_size = 2
-}
+                        (list ".config/hypr/shaders/vibrance.frag"
+                              (local-file "dotfiles/hypr/shaders/vibrance.frag"))
 
-$mainMod = SUPER
-
-bind = $mainMod, Return, exec, alacritty
-bind = $mainMod, Q, killactive,
-bind = $mainMod, D, exec, rofi -show drun
-bind = $mainMod, B, exec, qutebrowser
-")
-                     (list ".config/qutebrowser/config.py"
-                           (plain-file "qutebrowser-config.py" "\
-config.load_autoconfig()
-
-c.colors.webpage.preferred_color_scheme = 'dark'
-c.content.blocking.method = 'both'
-c.tabs.position = 'top'
-c.editor.command = ['nvim', '{file}']
-
-config.bind('d', 'tab-close')
-config.bind('J', 'tab-prev')
-config.bind('K', 'tab-next')
-")))))))
+                        (list ".config/gtk-3.0/settings.ini"
+                              (local-file "dotfiles/gtk-3.0/settings.ini"))
+                      ))))))
+(nvidia-transform %Anyone)
