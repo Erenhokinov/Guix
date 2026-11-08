@@ -1,0 +1,31 @@
+#!/bin/sh
+set -e
+
+. $(dirname $0)/containers_config
+
+if [ $# -ge 1 ] 
+then
+	CONTAINER_NAME="$1"
+else
+	CONTAINER_NAME="$( echo "$(cat $CONTAINER_LIST)" | $DMENU -p $DMENU_PROMPT $DMENU_FLAGS)"
+fi
+
+if test $QUTE_MODE = "hints"
+then
+	URL="$QUTE_URL"
+else
+	URL="$2"
+fi
+
+if container_exists "$CONTAINER_NAME"
+then
+	BASE_DIR="$CONTAINER_BASE/$CONTAINER_NAME"
+	
+	if [ ! -d "$BASE_DIR" ]
+	then
+		mkdir "$BASE_DIR"
+	fi
+	qutebrowser --qt-flag ignore-gpu-blacklist --qt-flag enable-gpu-rasterization --qt-flag enable-native-gpu-memory-buffers --qt-flag enable-accelerated-2d-canvas --qt-flag num-raster-threads=4 -B "$BASE_DIR" -C "$CONFIG_FILE" -s window.title_format " {perc}[$CONTAINER_NAME]{title_sep}{current_title}" "$URL"
+else
+	send_msg "error" "Container does not exist. Create using container-add"
+fi

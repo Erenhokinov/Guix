@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+. $(dirname $0)/containers_config
+
+for line in $(cat $CONTAINER_LIST)
+do
+	send_msg "info" "$line"
+done

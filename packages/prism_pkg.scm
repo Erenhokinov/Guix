@@ -35,51 +35,37 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages speech)
 )
+;;prism
 
 (define prism-container-libs
   `(
-    ("at-spi2-core" ,at-spi2-core)      ; Needed for proper mouse input capture
+    ("at-spi2-core" ,at-spi2-core)      
 
-    ;("openjdk" ,openjdk11)
-    ;("openjdk" ,openjdk16)
     ("openjdk" ,openjdk17)
     ("openjdk" ,openjdk21)
-    ;("openjdk" ,openjdk25)
 
-    ("glibc-locales", glibc-locales)    ;supress warning of missing locales
-    
-    ("alsa-lib" ,alsa-lib)  ;audio stuff might not need everything
+    ("glibc-locales", glibc-locales)    
+    ("alsa-lib" ,alsa-lib)  
     ("alsa-plugins:pulseaudio" , alsa-plugins "pulseaudio")
     ("openal" ,openal) 
     ("pulseaudio" ,pulseaudio)
-    ("flite" ,flite)  ; needed for speech systhesis        
- 
-    ("font-google-noto" ,font-google-noto) ; needed for languages
+    ("flite" ,flite)  
+    ("font-google-noto" ,font-google-noto) 
     ("font-google-noto-emoji" ,font-google-noto-emoji)
     ("font-google-noto-sans-cjk" ,font-google-noto-sans-cjk)
     ("font-google-noto-serif-cjk" ,font-google-noto-serif-cjk)
-    
-    ;("libusb" ,libusb)                  ; controller support maybe?
-    ;("usbutils", usbutils)
-    
-    ("libva" ,libva)                    ; Required for hardware video encoding/decoding.
-    ("libvdpau" ,libvdpau)              ; Required for hardware video encoding/decoding.
-    ("libvdpau-va-gl" ,libvdpau-va-gl)  ; Additional VDPAU support.
-    ("llvm" ,llvm-for-mesa)             ; Required for mesa.
+    ("libva" ,libva)                    
+    ("libvdpau" ,libvdpau)              
+    ("libvdpau-va-gl" ,libvdpau-va-gl)  
+    ("llvm" ,llvm-for-mesa)             
     ("mesa" ,mesa)
     ("libglvnd" ,libglvnd)   
-    ("nss-certs" ,nss-certs)            ; Required for accounts and such
-    ("wayland" ,wayland)                ; Needed for mesa vulcan
-    ("pciutils", pciutils)              ; runs lspci at start of minecraft launch
-    ("xdg-user-dirs" ,xdg-user-dirs)    ; Suppress warning of missing xdg-user-dir.
-    
-    ;; TODO: still missing some icons and cursor isn't hidden when running minecraft, error logs also show a render error
-    ;;       missing x11 cursor, this doesn't impair functionality so fix it yourself if it annoys you, 
-    ;;       the program is launched in a container with wayland as it's QT_QPA_PLATFORM environment variable which should be xcb
-    ;;       additionally one would probably need some form of xwayland this probably isn't an issue on x11, hasn't been tested yet though
+    ("nss-certs" ,nss-certs)            
+    ("wayland" ,wayland)                
+    ("pciutils", pciutils)              
+    ("xdg-user-dirs" ,xdg-user-dirs)    
   )
 )
-
 
 (define-public prism-client
   (package
@@ -125,7 +111,7 @@
     (arguments
       `(
         #:build-type "Release"
-        #:phases ;%standard-phases 
+        #:phases 
           (modify-phases %standard-phases
             (add-before 'configure 'patch-java-flagsnconfig
               (lambda _
@@ -156,7 +142,6 @@
                 )
               )
             )
-            
             (add-after 'patch-dot-desktop-files 'patch-desktop-file-prism
               (lambda _
                 (let ((path (string-append (assoc-ref %outputs "out") "/share/applications/")))
@@ -169,9 +154,7 @@
                 )
               )
             )
-            
           )         
-        ;end phases
       )
     )
     (native-inputs
@@ -245,7 +228,6 @@
   )
 )
 
-
 (define-public (prism-container-for package-name driver launcher game-mods path)
   (nonguix-container
     (name package-name)
@@ -261,10 +243,6 @@
       (fhs-union
         (append 
           (modify-inputs prism-container-libs
-            ;; The first java found will be used and it needs to be
-            ;; 64-bit.
-            ;; TODO: Find a better solution, this solution was taken from nonguix game-clients
-            ;;       They have the same goal so waiting till they solve it should be fine
             (delete "openjdk")
 
             (replace "mesa" driver)
@@ -291,7 +269,6 @@ all games will be installed."
 (define-public (prism-driverless-pathless driver path)
   (prism-for "prism" driver prism-client `() path)
 )
-
 
 (define-public (prism-cracked-driverless-pathless driver path)
   (prism-for "prism-cracked" driver prism-cracked-client `() path)

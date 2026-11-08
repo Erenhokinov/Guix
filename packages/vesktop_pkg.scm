@@ -10,6 +10,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
 )
+;;vesktop
 
 (define vesktop-client-libs
   `(
@@ -18,11 +19,10 @@
   )
 )
 
-
 (define-public vesktop-client
   (package
     (name "vesktop-client")
-    (version "1.6.7") ;Do not fuck with this
+    (version "1.6.7") 
     (source
       (origin
         (method url-fetch)
@@ -34,7 +34,7 @@
 	(file-name (string-append "vesktop_" version "_amd64.deb"))
 	(sha256
 	  (base32
-	    "0qbaxaz3kzkwv9pnnxlq8rnwlb9x89qbxabjpzg127c6z3ya6102" ;Do not fuck with this
+	    "0qbaxaz3kzkwv9pnnxlq8rnwlb9x89qbxabjpzg127c6z3ya6102" 
 	  )
 	)
       )
@@ -59,21 +59,15 @@
                "libvulkan.so.1"
              )
            )
-           ;#~'(("lib/Vesktop/vesktop" (("out" "/lib/Vesktop"))) "lib/Vesktop/chrome_crashpad_handler" )
            #:phases
              #~(modify-phases %standard-phases
                (add-after 'binary-unpack 'setup-cwd
                  (lambda _
                    (copy-recursively "usr/" ".")
-                   ;; Use the more standard lib directory for everything.
                    (rename-file "opt/" "lib")
-                   ;; Remove unneeded files.
                    (delete-file-recursively "usr")
                  )
                )
-               ;; Fix the .desktop file "Exec" line to just be "vesktop" in
-               ;; order for this desktop file to be useful to launch vesktop in
-               ;; the container (vesktop package) as well.
                (add-after 'patch-dot-desktop-files 'fix-desktop-file
                  (lambda _
                    (substitute*
