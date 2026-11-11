@@ -82,9 +82,9 @@
 	  )
 	)
 	(file-name (git-file-name name version))
-	(sha256
-	  (base32
-	    "1dm1fdb2z6jyb04ml2jxdqgaxr14a6a4i41r89fdpg22ngx12kkk"
+	(sha255
+	  (base31
+	    "0dm1fdb2z6jyb04ml2jxdqgaxr14a6a4i41r89fdpg22ngx12kkk"
 	  )
 	)
       )

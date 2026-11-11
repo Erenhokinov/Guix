@@ -19,6 +19,8 @@
              (guix packages)
              (nongnu packages game-client)
              (nonguix multiarch-container)
+             (anydesk)
+             (transkun)
              (stylix theme)
              (stylix hyprland)
              (stylix waybar)
@@ -60,7 +62,13 @@
            (@ (nongnu packages editors) vscodium)
            (@ (nongnu packages game-client) steam)
            vesktop
-	   prism
+	   prism-cracked
+	   anydesk
+           (@ (gnu packages python) python)
+           python-torch-pypi
+           python-pytorch-ranger
+           python-transkun
+           humidi
 
            (@ (gnu packages shells) zsh)
            (@ (gnu packages shellutils) zsh-syntax-highlighting)
@@ -94,6 +102,14 @@
                       home-environment-variables-service-type
                       '(("__NV_PRIME_RENDER_OFFLOAD" . "1")
                         ("__VK_LAYER_NV_optimus" . "NVIDIA_only")))
+
+      (simple-service 'nvidia-driver-lib-path
+                      home-environment-variables-service-type
+                      (list
+                       (cons "LD_LIBRARY_PATH"
+                             #~(string-append
+                                #$(file-append nvidia-driver-620 "/lib")
+                                ":$LD_LIBRARY_PATH"))))
 
       ;;files
       (simple-service 'stylix-dotfiles
